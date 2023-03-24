@@ -13,6 +13,8 @@
 		6E991A3929CC35CB00357C1C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E991A3729CC35CB00357C1C /* Main.storyboard */; };
 		6E991A3B29CC35CC00357C1C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6E991A3A29CC35CC00357C1C /* Assets.xcassets */; };
 		6E991A3E29CC35CD00357C1C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6E991A3C29CC35CD00357C1C /* LaunchScreen.storyboard */; };
+		6E991A4A29CDAD3500357C1C /* PureLayout in Frameworks */ = {isa = PBXBuildFile; productRef = 6E991A4929CDAD3500357C1C /* PureLayout */; };
+		6E991A4D29CDB00E00357C1C /* MovieAppData in Frameworks */ = {isa = PBXBuildFile; productRef = 6E991A4C29CDB00E00357C1C /* MovieAppData */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6E991A4A29CDAD3500357C1C /* PureLayout in Frameworks */,
+				6E991A4D29CDB00E00357C1C /* MovieAppData in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,6 +87,10 @@
 			dependencies = (
 			);
 			name = MovieApp;
+			packageProductDependencies = (
+				6E991A4929CDAD3500357C1C /* PureLayout */,
+				6E991A4C29CDB00E00357C1C /* MovieAppData */,
+			);
 			productName = MovieApp;
 			productReference = 6E991A2E29CC35CB00357C1C /* MovieApp.app */;
 			productType = "com.apple.product-type.application";
@@ -111,6 +119,10 @@
 				Base,
 			);
 			mainGroup = 6E991A2529CC35CB00357C1C;
+			packageReferences = (
+				6E991A4829CDAD3500357C1C /* XCRemoteSwiftPackageReference "PureLayout" */,
+				6E991A4B29CDB00E00357C1C /* XCRemoteSwiftPackageReference "MovieAppData" */,
+			);
 			productRefGroup = 6E991A2F29CC35CB00357C1C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -356,6 +368,38 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		6E991A4829CDAD3500357C1C /* XCRemoteSwiftPackageReference "PureLayout" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/PureLayout/PureLayout.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
+		6E991A4B29CDB00E00357C1C /* XCRemoteSwiftPackageReference "MovieAppData" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/fiveagency/MovieAppData";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		6E991A4929CDAD3500357C1C /* PureLayout */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E991A4829CDAD3500357C1C /* XCRemoteSwiftPackageReference "PureLayout" */;
+			productName = PureLayout;
+		};
+		6E991A4C29CDB00E00357C1C /* MovieAppData */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 6E991A4B29CDB00E00357C1C /* XCRemoteSwiftPackageReference "MovieAppData" */;
+			productName = MovieAppData;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 6E991A2629CC35CB00357C1C /* Project object */;
 }
