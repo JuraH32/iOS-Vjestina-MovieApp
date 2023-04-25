@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import PureLayout
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {

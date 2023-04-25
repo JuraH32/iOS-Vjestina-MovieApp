@@ -18,20 +18,19 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     var crewList: [MovieCrewMemberModel]!
     let reuseIdentifier = "cell"
     
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        details = MovieUseCase().getDetails(id: 111161)
-        guard let details else {return}
-        crewList = details.crewMembers
+        getDetails()
         createViews()
         styleViews()
         defineLayoutForViews()
-        
     }
     
     private func createViews() {
-        guard let details else {return}
         movieBannerView = MovieBannerView(details: details)
         view.addSubview(movieBannerView)
         
@@ -40,7 +39,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         view.addSubview(overviewLabel)
         
         summary = UILabel()
-        summary.text = details.summary
+        summary.text = details!.summary
         view.addSubview(summary)
 
         let roleLayout = UICollectionViewFlowLayout()
@@ -85,9 +84,13 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         roleCollectionView.autoPinEdge(toSuperviewEdge: .bottom)
     }
     
+    private func getDetails() {
+        details = MovieUseCase().getDetails(id: 111161)
+        crewList = details!.crewMembers
+    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return crewList.count
+        crewList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -99,9 +102,4 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         
         return cell
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
 }

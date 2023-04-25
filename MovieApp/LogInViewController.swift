@@ -8,16 +8,13 @@ import UIKit
 import PureLayout
 
 class LogInViewController: UIViewController {
-    
     var signInLabel: UILabel!
     var emailInput: InputView!
     var passwordInput: InputView!
     var signInButton: UIButton!
     
-    init (){
-        super.init(nibName: nil, bundle: nil)
-        let color = UIColor(red: 11/255, green: 37/255, blue: 63/255, alpha: 1)
-        view.backgroundColor = color
+    override var preferredStatusBarStyle: UIStatusBarStyle {
+        return .lightContent
     }
     
     required init?(coder: NSCoder) {
@@ -29,13 +26,11 @@ class LogInViewController: UIViewController {
         createViews()
         styleViews()
         defineLayoutForViews()
-        
     }
     
     func createViews() {
         signInLabel = UILabel()
         view.addSubview(signInLabel)
-        signInLabel.text = "Sign in"
         
         emailInput = InputView(label: "Email address", placeholder: "ex. matt@ioscourse.com")
         view.addSubview(emailInput)
@@ -55,9 +50,13 @@ class LogInViewController: UIViewController {
     func styleViews() {
         signInLabel.font = UIFont.boldSystemFont(ofSize: 24)
         signInLabel.textColor = .white
+        signInLabel.text = "Sign in"
         
         signInButton.layer.cornerRadius = 10
         signInButton.backgroundColor = UIColor(red: 76/255, green: 178/255, blue: 223/255, alpha: 1)
+        
+        let color = UIColor(red: 11/255, green: 37/255, blue: 63/255, alpha: 1)
+        view.backgroundColor = color
     }
     
     func defineLayoutForViews() {
@@ -78,9 +77,4 @@ class LogInViewController: UIViewController {
         signInButton.autoPinEdge(toSuperviewEdge: .trailing, withInset: 32)
         signInButton.autoSetDimension(.height, toSize: 40)
     }
-    
-    override var preferredStatusBarStyle: UIStatusBarStyle {
-        return .lightContent
-    }
-
 }

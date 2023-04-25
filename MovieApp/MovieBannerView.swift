@@ -16,46 +16,44 @@ class MovieBannerView: UIView {
     let dateLabel = UILabel()
     let categories = UILabel()
     let starButton = UIButton()
-    var backgroundImage = UIImageView()
-    var categoriesString = ""
-    
     let starButtonSize = 32.0
     
     var details: MovieDetailsModel?
-    
+    var backgroundImage = UIImageView()
+    var categoriesString = ""
     
     init(details: MovieDetailsModel?) {
         self.details = details
         super.init(frame: .zero)
-        self.commonInit()
+        buildViews()
     }
 
     required init?(coder aDecoder: NSCoder) {
         self.details = nil
         super.init(coder: aDecoder)
-        self.commonInit()
+        buildViews()
     }
     
-    private func commonInit() {
-        assignViews()
-        style()
-        layout()
+    private func buildViews() {
+        createViews()
+        styleViews()
+        defineLayoutForViews()
     }
     
-    private func assignViews() {
+    private func createViews() {
         guard let details else {return}
         Task {
             await loadImage(imageURL: details.imageUrl, imageView: backgroundImage)
         }
-        self.addSubview(scoreLabel)
+        addSubview(scoreLabel)
         scoreLabel.text = String(details.rating)
         
-        self.addSubview(userScoreLabel)
+        addSubview(userScoreLabel)
         userScoreLabel.text = "User score"
         
-        self.addSubview(movieNameLabel)
+        addSubview(movieNameLabel)
         
-        self.addSubview(dateLabel)
+        addSubview(dateLabel)
         
         let dateString = details.releaseDate
         let dateFormatterOriginal = DateFormatter()
@@ -67,16 +65,15 @@ class MovieBannerView: UIView {
             dateLabel.text = dateFormatterNew.string(from: date!)
         }
         
-        self.addSubview(categories)
+        addSubview(categories)
         let cat = [MovieCategoryModel.action, MovieCategoryModel.adventure, MovieCategoryModel.drama, MovieCategoryModel.scienceFiction]
         categoriesString = cat
             .map {(category: MovieCategoryModel) -> String in return capitalSplitString(string: String(describing: category)).capitalized}
             .joined(separator: ", ")
         
-        self.addSubview(starButton)
-        self.addSubview(backgroundImage)
-        self.sendSubviewToBack(backgroundImage)
-        
+        addSubview(starButton)
+        addSubview(backgroundImage)
+        sendSubviewToBack(backgroundImage)
     }
     
     private func capitalSplitString(string: String) -> String{
@@ -90,7 +87,7 @@ class MovieBannerView: UIView {
         return splitString
     }
     
-    private func style() {
+    private func styleViews() {
         guard let details else {return}
         backgroundImage.contentMode = .scaleAspectFill
         backgroundImage.clipsToBounds = true
@@ -123,7 +120,7 @@ class MovieBannerView: UIView {
         starButton.layer.cornerRadius = starButtonSize / 2
     }
     
-    private func layout() {
+    private func defineLayoutForViews() {
         backgroundImage.autoPinEdgesToSuperviewEdges()
         backgroundImage.setContentCompressionResistancePriority(UILayoutPriority.defaultLow, for: .vertical)
         

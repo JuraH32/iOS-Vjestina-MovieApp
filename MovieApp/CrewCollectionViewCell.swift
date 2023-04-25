@@ -14,21 +14,21 @@ class CrewCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.commonInit()
+        buildViews()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.commonInit()
+        buildViews()
     }
     
-    private func commonInit() {
-        assignViews()
-        style()
-        layout()
+    private func buildViews() {
+        createViews()
+        styleViews()
+        defineLayoutForViews()
     }
     
-    private func assignViews() {
+    private func createViews() {
         self.addSubview(nameLabel)
         self.addSubview(roleLabel)
     }
@@ -40,16 +40,12 @@ class CrewCollectionViewCell: UICollectionViewCell {
         roleLabel.attributedText = NSMutableAttributedString(string: role, attributes: [NSAttributedString.Key.paragraphStyle: paragraphStyle])
     }
     
-    private func style() {
+    private func styleViews() {
         nameLabel.font = UIFont.boldSystemFont(ofSize: 14)
-        
         roleLabel.font = UIFont.systemFont(ofSize: 14)
-        
-        
-        
     }
     
-    private func layout() {
+    private func defineLayoutForViews() {
         nameLabel.autoPinEdge(toSuperviewEdge: .top)
         nameLabel.autoPinEdge(toSuperviewEdge: .leading)
         nameLabel.autoPinEdge(toSuperviewEdge: .trailing)
