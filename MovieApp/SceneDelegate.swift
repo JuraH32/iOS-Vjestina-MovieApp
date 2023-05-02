@@ -16,14 +16,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         _ scene: UIScene,
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
-    ){
-        guard let windowScene = scene as? UIWindowScene // 1
-        else{ return }
+    ) {
+        guard let windowScene = scene as? UIWindowScene
+        else { return }
         
-        window = UIWindow(windowScene: windowScene)     // 2
-        let vc = MovieCategoryListViewController()                // 3
-        window?.rootViewController = vc                 // 4
-        window?.makeKeyAndVisible()                     // 5
+        window = UIWindow(windowScene: windowScene)
+        let vc = MovieCategoryListViewController()
+        window?.rootViewController = vc
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
