@@ -9,18 +9,18 @@ import UIKit
 import PureLayout
 
 class MovieBannerCell: UICollectionViewCell {
-    var movieImage: UIImageView!
-    var heartButton: UIButton!
-    var heartImageView: UIImageView!
+    private var movieImage: UIImageView!
+    private var heartButton: UIButton!
+    private var heartImageView: UIImageView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.commonInit()
+        commonInit()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.commonInit()
+        commonInit()
     }
     
     private func commonInit() {
@@ -29,7 +29,7 @@ class MovieBannerCell: UICollectionViewCell {
         layout()
     }
     
-    public func setData(imageUrl: String) {
+    func setData(imageUrl: String) {
         Task {
             await loadImage(imageURL: imageUrl, imageView: movieImage)
         }
@@ -38,19 +38,19 @@ class MovieBannerCell: UICollectionViewCell {
     private func assignViews() {
         
         movieImage = UIImageView()
-        self.addSubview(movieImage)
-        self.sendSubviewToBack(movieImage)
+        addSubview(movieImage)
+        sendSubviewToBack(movieImage)
         
         heartButton = UIButton()
-        self.addSubview(heartButton)
+        addSubview(heartButton)
         
         heartImageView = UIImageView()
         heartButton.addSubview(heartImageView)
     }
     
     private func style() {
-        self.layer.cornerRadius = 10
-        self.layer.masksToBounds = true
+        layer.cornerRadius = 10
+        layer.masksToBounds = true
         
         movieImage.contentMode = .scaleAspectFill
         movieImage.clipsToBounds = true

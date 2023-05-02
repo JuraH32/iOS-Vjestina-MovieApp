@@ -9,12 +9,12 @@ import UIKit
 import PureLayout
 import MovieAppData
 
-class MovieCategoryCollection: UIView, UICollectionViewDelegate, UICollectionViewDataSource {
-    var movieCategoryLabel: UILabel!
-    var moviesList: [MovieModel]!
-    var moviesCategoryCollectionView: UICollectionView!
-    var categoryName: String!
-    let reuseIdentifier = "cell"
+class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectionViewDataSource {
+    private var movieCategoryLabel: UILabel!
+    private var moviesList: [MovieModel]!
+    private var moviesCategoryCollectionView: UICollectionView!
+    private var categoryName: String!
+    private let reuseIdentifier = "cell"
     
     init(category: String, moviesList: [MovieModel]) {
         self.categoryName = category
@@ -71,11 +71,14 @@ class MovieCategoryCollection: UIView, UICollectionViewDelegate, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return moviesList.count
+        moviesList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = moviesCategoryCollectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MovieBannerCell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: reuseIdentifier,
+                        for: indexPath
+        ) as? MovieBannerCell else { fatalError() }
         
         let movie = moviesList[indexPath.item]
         

@@ -10,16 +10,16 @@ import PureLayout
 import MovieAppData
 
 class MovieCategoryListViewController: UIViewController {
-    var scrollView: UIScrollView!
-    var contentView: UIView!
-    var categoryStack: UIStackView!
-    var popularList: [MovieModel]!
-    var popularCollection: MovieCategoryCollection!
-    var freeList: [MovieModel]!
-    var freeCollection: MovieCategoryCollection!
-    var trendingList: [MovieModel]!
-    var trendingCollection: MovieCategoryCollection!
-    let reuseIdentifier = "cell"
+    private var scrollView: UIScrollView!
+    private var contentView: UIView!
+    private var categoryStack: UIStackView!
+    private var popularList: [MovieModel]!
+    private var popularCollection: MovieCategoryCollectionView!
+    private var freeList: [MovieModel]!
+    private var freeCollection: MovieCategoryCollectionView!
+    private var trendingList: [MovieModel]!
+    private var trendingCollection: MovieCategoryCollectionView!
+    private let reuseIdentifier = "cell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,13 +47,13 @@ class MovieCategoryListViewController: UIViewController {
         categoryStack = UIStackView()
         contentView.addSubview(categoryStack)
         
-        popularCollection = MovieCategoryCollection(category: "What's popular", moviesList: popularList)
+        popularCollection = MovieCategoryCollectionView(category: "What's popular", moviesList: popularList)
         categoryStack.addArrangedSubview(popularCollection)
         
-        freeCollection = MovieCategoryCollection(category: "Free to Watch", moviesList: freeList)
+        freeCollection = MovieCategoryCollectionView(category: "Free to Watch", moviesList: freeList)
         categoryStack.addArrangedSubview(freeCollection)
         
-        trendingCollection = MovieCategoryCollection(category: "Trending", moviesList: trendingList)
+        trendingCollection = MovieCategoryCollectionView(category: "Trending", moviesList: trendingList)
         categoryStack.addArrangedSubview(trendingCollection)
     }
     

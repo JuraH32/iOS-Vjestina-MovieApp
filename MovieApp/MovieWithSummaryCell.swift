@@ -9,18 +9,18 @@ import UIKit
 import PureLayout
 
 class MovieWithSummaryCell: UICollectionViewCell {
-    var movieNameLabel: UILabel!
-    var movieImage: UIImageView!
-    var summaryLabel: UILabel!
+    private var movieNameLabel: UILabel!
+    private var movieImage: UIImageView!
+    private var summaryLabel: UILabel!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        self.commonInit()
+        commonInit()
     }
 
     required init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
-        self.commonInit()
+        commonInit()
     }
     
     private func commonInit() {
@@ -29,7 +29,7 @@ class MovieWithSummaryCell: UICollectionViewCell {
         layout()
     }
     
-    public func setData(imageUrl: String, name: String, summary: String) {
+    func setData(imageUrl: String, name: String, summary: String) {
         movieNameLabel.text = name
         Task {
             await loadImage(imageURL: imageUrl, imageView: movieImage)
@@ -50,13 +50,14 @@ class MovieWithSummaryCell: UICollectionViewCell {
     }
     
     private func style() {
-        self.backgroundColor = .white
+        backgroundColor = .white
         contentView.layer.cornerRadius = 10
         contentView.clipsToBounds = true
-        self.layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1).cgColor
-        self.layer.shadowOpacity = 1
-        self.layer.shadowRadius = 20
-        self.layer.shadowOffset = CGSize(width: 0, height: 4)
+        layer.shadowColor = UIColor(red: 0, green: 0, blue: 0, alpha: 0.1).cgColor
+        layer.shadowOpacity = 1
+        layer.shadowRadius = 20
+        layer.cornerRadius = 10
+        layer.shadowOffset = CGSize(width: 0, height: 4)
         
         movieImage.contentMode = .scaleAspectFill
                 

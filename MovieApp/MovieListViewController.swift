@@ -10,9 +10,9 @@ import PureLayout
 import MovieAppData
 
 class MovieListViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
-    var moviesCollectionView: UICollectionView!
-    var moviesList: [MovieModel] = []
-    let reuseIdentifier = "cell"
+    private var moviesCollectionView: UICollectionView!
+    private var moviesList: [MovieModel] = []
+    private let reuseIdentifier = "cell"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,17 +49,19 @@ class MovieListViewController: UIViewController, UICollectionViewDataSource, UIC
     
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return moviesList.count
+        moviesList.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = moviesCollectionView.dequeueReusableCell(withReuseIdentifier: reuseIdentifier, for: indexPath) as! MovieWithSummaryCell
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: reuseIdentifier,
+                        for: indexPath
+        ) as? MovieWithSummaryCell else { fatalError() }
         
         let movie = moviesList[indexPath.item]
         
         cell.setData(imageUrl: movie.imageUrl, name: movie.name, summary: movie.summary)
         
-        cell.layer.cornerRadius = 10
         
         return cell
     }
