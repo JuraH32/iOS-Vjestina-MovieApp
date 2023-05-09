@@ -19,7 +19,18 @@ class MovieCategoryListViewController: UIViewController {
     private var freeCollection: MovieCategoryCollectionView!
     private var trendingList: [MovieModel]!
     private var trendingCollection: MovieCategoryCollectionView!
+    private var screenTitle: UILabel!
+    private var router: AppRouter!
     private let reuseIdentifier = "cell"
+    
+    init (router: AppRouter) {
+        self.router = router
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +49,9 @@ class MovieCategoryListViewController: UIViewController {
     }
     
     private func createViews() {
+        screenTitle = UILabel()
+        navigationItem.titleView = screenTitle
+        
         scrollView = UIScrollView()
         view.addSubview(scrollView)
         
@@ -47,13 +61,13 @@ class MovieCategoryListViewController: UIViewController {
         categoryStack = UIStackView()
         contentView.addSubview(categoryStack)
         
-        popularCollection = MovieCategoryCollectionView(category: "What's popular", moviesList: popularList)
+        popularCollection = MovieCategoryCollectionView(category: "What's popular", moviesList: popularList, router: router)
         categoryStack.addArrangedSubview(popularCollection)
         
-        freeCollection = MovieCategoryCollectionView(category: "Free to Watch", moviesList: freeList)
+        freeCollection = MovieCategoryCollectionView(category: "Free to Watch", moviesList: freeList, router: router)
         categoryStack.addArrangedSubview(freeCollection)
         
-        trendingCollection = MovieCategoryCollectionView(category: "Trending", moviesList: trendingList)
+        trendingCollection = MovieCategoryCollectionView(category: "Trending", moviesList: trendingList, router: router)
         categoryStack.addArrangedSubview(trendingCollection)
     }
     
@@ -63,6 +77,8 @@ class MovieCategoryListViewController: UIViewController {
         categoryStack.alignment = .fill
         categoryStack.distribution = .fillEqually
         categoryStack.spacing = 40
+        
+        screenTitle.text = "Movie List"
     }
     
     private func defineLayoutForViews() {
