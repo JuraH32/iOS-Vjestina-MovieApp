@@ -161,7 +161,7 @@ class MovieBannerView: UIView {
             let url = URL(string: imageURL)
             let data = try Data(contentsOf: url!)
             let image = UIImage(data: data)
-            backgroundImage.image = image
+            imageView.image = image
         } catch {
             return
         }

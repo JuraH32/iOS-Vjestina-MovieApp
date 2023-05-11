@@ -21,9 +21,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         else { return }
         
         window = UIWindow(windowScene: windowScene)
-        let vc = MovieDetailsViewController()
+        let vc = MovieCategoryListViewController()
         window?.rootViewController = vc
-        window?.makeKeyAndVisible()                     
+        window?.makeKeyAndVisible()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
