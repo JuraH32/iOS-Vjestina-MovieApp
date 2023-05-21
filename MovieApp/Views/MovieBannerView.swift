@@ -40,7 +40,7 @@ class MovieBannerView: UIView {
     }
     
     func updateDetails(details: MovieDetailsModel?) {
-        self.details = details!
+        self.details = details
         guard let details else { return }
         scoreLabel.text = String(details.rating)
         

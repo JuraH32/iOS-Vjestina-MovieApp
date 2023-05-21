@@ -7,7 +7,6 @@
 
 import UIKit
 import PureLayout
-import MovieAppData
 import Combine
 
 class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
@@ -110,18 +109,20 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     private func bindData() {
         viewModel.$movieDetails.sink { [weak self] movie in
             self?.details = movie
-            self!.movieBannerView.updateDetails(details: self!.details)
+            DispatchQueue.main.async {
+                self?.movieBannerView.updateDetails(details: self?.details)
+                self?.summary.text = self?.details?.summary
+                self?.crewList = self?.details?.crewMembers
+                self?.roleCollectionView.reloadData()
+            }
         }.store(in: &disposable)
-        guard let details else { return }
-        crewList = details.crewMembers
-        summary.text = details.summary
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
         summary.transform = summary.transform.translatedBy(x: -view.frame.width, y: 0)
-        roleCollectionView.transform = roleCollectionView.transform.translatedBy(x: -view.frame.width, y: 0)
+        roleCollectionView.layer.opacity = 0
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -135,12 +136,12 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
             withDuration: 0.3,
             delay: 0.2,
             animations: {
-                self.roleCollectionView.transform = .identity
+                self.roleCollectionView.layer.opacity = 1
         })
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        crewList.count
+        crewList != nil ? crewList.count : 0
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

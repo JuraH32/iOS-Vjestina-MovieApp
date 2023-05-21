@@ -54,7 +54,6 @@ class MovieCategoryListViewController: UIViewController {
         }.store(in: &disposablesFree)
         
         viewModel.$freeToWatchMovies.sink { [weak self] movies in
-            print (movies)
             self?.freeList = movies
             self?.freeCollection.updateMoviesList(movies: self?.freeList ?? [])
         }.store(in: &disposablesPopular)
