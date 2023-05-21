@@ -7,7 +7,6 @@
 
 import UIKit
 import PureLayout
-import MovieAppData
 
 class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectionViewDataSource {
     private var movieCategoryLabel: UILabel!
@@ -87,5 +86,12 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
         cell.setData(imageUrl: movie.imageUrl, movieId: movie.id, router: router)
         
         return cell
+    }
+    
+    func updateMoviesList(movies: [MovieModel]) {
+        moviesList = movies
+        DispatchQueue.main.async {
+            self.moviesCategoryCollectionView.reloadData()
+        }
     }
 }

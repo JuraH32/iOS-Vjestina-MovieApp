@@ -11,7 +11,7 @@ import MovieAppData
 
 class MovieListViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     private var moviesCollectionView: UICollectionView!
-    private var moviesList: [MovieModel] = []
+    private var moviesList: [MovieAppData.MovieModel] = []
     private var router: AppRouter
     private var screenTitle: UILabel!
     private let reuseIdentifier = "cell"

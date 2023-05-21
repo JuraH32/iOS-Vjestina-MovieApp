@@ -22,7 +22,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         window = UIWindow(windowScene: windowScene)
         let tabBarController = UITabBarController()
-        let router = AppRouter(tabBarController: tabBarController)
+        let movieDataSource = MovieDataSource()
+        let router = AppRouter(tabBarController: tabBarController, movieDataSource: movieDataSource)
         router.setStartScreen(in: window)
     }
 

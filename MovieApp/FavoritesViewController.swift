@@ -5,9 +5,9 @@
 //  Created by endava-bootcamp on 09.05.2023..
 //
 
-import Foundation
+import UIKit
 
-class FavoritesViewController: ViewController {
+class FavoritesViewController: UIViewController {
     private var router: AppRouter
     
     init(router: AppRouter) {

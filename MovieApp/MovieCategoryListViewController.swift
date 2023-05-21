@@ -8,23 +8,30 @@
 import UIKit
 import PureLayout
 import MovieAppData
+import Combine
 
 class MovieCategoryListViewController: UIViewController {
     private var scrollView: UIScrollView!
     private var contentView: UIView!
     private var categoryStack: UIStackView!
-    private var popularList: [MovieModel]!
+    private var popularList: [MovieModel] = []
     private var popularCollection: MovieCategoryCollectionView!
-    private var freeList: [MovieModel]!
+    private var freeList: [MovieModel] = []
     private var freeCollection: MovieCategoryCollectionView!
-    private var trendingList: [MovieModel]!
+    private var trendingList: [MovieModel] = []
     private var trendingCollection: MovieCategoryCollectionView!
     private var screenTitle: UILabel!
     private var router: AppRouter!
+    private var viewModel: MovieCategoryListViewModel!
+    private var disposablesFree = Set<AnyCancellable>()
+    private var disposablesPopular = Set<AnyCancellable>()
+    private var disposablesTrending = Set<AnyCancellable>()
     private let reuseIdentifier = "cell"
     
-    init (router: AppRouter) {
+    init (router: AppRouter, viewModel: MovieCategoryListViewModel) {
         self.router = router
+        self.viewModel = viewModel
+        
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -34,18 +41,28 @@ class MovieCategoryListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getData()
         createViews()
         styleViews()
         defineLayoutForViews()
-        
+        bindData()
     }
     
-    private func getData() {
-        let useCase = MovieUseCase()
-        popularList = useCase.popularMovies
-        freeList = useCase.freeToWatchMovies
-        trendingList = useCase.trendingMovies
+    private func bindData() {
+        viewModel.$popularMovies.sink { [weak self] movies in
+            self?.popularList = movies
+            self?.popularCollection.updateMoviesList(movies: self?.popularList ?? [])
+        }.store(in: &disposablesFree)
+        
+        viewModel.$freeToWatchMovies.sink { [weak self] movies in
+            print (movies)
+            self?.freeList = movies
+            self?.freeCollection.updateMoviesList(movies: self?.freeList ?? [])
+        }.store(in: &disposablesPopular)
+        
+        viewModel.$trendingMovies.sink { [weak self] movies in
+            self?.trendingList = movies
+            self?.trendingCollection.updateMoviesList(movies: self?.trendingList ?? [])
+        }.store(in: &disposablesTrending)
     }
     
     private func createViews() {

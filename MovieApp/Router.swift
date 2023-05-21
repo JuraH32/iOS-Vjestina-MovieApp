@@ -14,12 +14,16 @@ class AppRouter: AppRouterProtocol {
     private weak var tabBarController: UITabBarController?
     private var alternateNavigationController: UINavigationController?
     private var isAlternate = false
-    init(tabBarController: UITabBarController) {
+    private var movieDataSource: MovieDataSource!
+    
+    init(tabBarController: UITabBarController, movieDataSource: MovieDataSource) {
         self.tabBarController = tabBarController
+        self.movieDataSource = movieDataSource
     }
     
     func setStartScreen(in window: UIWindow?) {
-        let movieCategoryViewListController = MovieCategoryListViewController(router: self)
+        let movieCategoryViewListModel = MovieCategoryListViewModel(movieDataSource: movieDataSource)
+        let movieCategoryViewListController = MovieCategoryListViewController(router: self, viewModel: movieCategoryViewListModel)
         let movieCategoryNavigation = UINavigationController(rootViewController: movieCategoryViewListController)
         
         let favoritesViewController = FavoritesViewController(router: self)
@@ -46,7 +50,8 @@ class AppRouter: AppRouterProtocol {
     }
     
     func openMovieDetail(movieId: Int) {
-        let movieDetailsViewController = MovieDetailsViewController(movieId: movieId)
+        let movieDetailsViewModel = MovieDetailsViewModel(movieDataSource: movieDataSource, id: movieId)
+        let movieDetailsViewController = MovieDetailsViewController(movieId: movieId, viewModel: movieDetailsViewModel)
         movieDetailsViewController.title = "Movie Details"
         if let selectedNavigationController = tabBarController?.selectedViewController as? UINavigationController {
             selectedNavigationController.pushViewController(movieDetailsViewController, animated: true)

@@ -100,14 +100,20 @@ class MovieWithSummaryCell: UICollectionViewCell {
         cellButton.autoPinEdgesToSuperviewEdges()
     }
     
-    func loadImage (imageURL: String, imageView: UIImageView) async {
-        do {
-            let url = URL(string: imageURL)
-            let data = try Data(contentsOf: url!)
-            let image = UIImage(data: data)
-            imageView.image = image
-        } catch {
+    func loadImage(imageURL: String, imageView: UIImageView) async {
+        guard let url = URL(string: imageURL) else {
             return
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                imageView.image = image
+            }
+        } catch {
+            print("Error loading image: \(error)")
         }
     }
     

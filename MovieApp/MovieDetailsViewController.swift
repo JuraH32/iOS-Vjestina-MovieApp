@@ -8,6 +8,7 @@
 import UIKit
 import PureLayout
 import MovieAppData
+import Combine
 
 class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     private var movieBannerView: MovieBannerView!
@@ -18,6 +19,8 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     private var crewList: [MovieCrewMemberModel]!
     private var movieId: Int!
     private var screenTitle: UILabel!
+    private var viewModel: MovieDetailsViewModel
+    private var disposable = Set<AnyCancellable>()
     
     private var summaryCenterConstrain: NSLayoutConstraint!
     private var rolesCenterConstrain: NSLayoutConstraint!
@@ -28,8 +31,9 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         return .lightContent
     }
     
-    init(movieId: Int) {
+    init(movieId: Int, viewModel: MovieDetailsViewModel) {
         self.movieId = movieId
+        self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -39,17 +43,17 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getDetails()
         createViews()
         styleViews()
         defineLayoutForViews()
+        bindData()
     }
     
     private func createViews() {
         screenTitle = UILabel()
         navigationItem.titleView = screenTitle
         
-        movieBannerView = MovieBannerView(details: details)
+        movieBannerView = MovieBannerView()
         view.addSubview(movieBannerView)
         
         overviewLabel = UILabel()
@@ -57,7 +61,6 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         view.addSubview(overviewLabel)
         
         summary = UILabel()
-        summary.text = details!.summary
         view.addSubview(summary)
 
         let roleLayout = UICollectionViewFlowLayout()
@@ -104,9 +107,14 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         roleCollectionView.autoAlignAxis(toSuperviewAxis: .vertical)
     }
     
-    private func getDetails() {
-        details = MovieUseCase().getDetails(id: movieId)
-        crewList = details!.crewMembers
+    private func bindData() {
+        viewModel.$movieDetails.sink { [weak self] movie in
+            self?.details = movie
+            self!.movieBannerView.updateDetails(details: self!.details)
+        }.store(in: &disposable)
+        guard let details else { return }
+        crewList = details.crewMembers
+        summary.text = details.summary
     }
     
     override func viewWillAppear(_ animated: Bool) {
