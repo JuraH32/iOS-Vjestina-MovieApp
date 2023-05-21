@@ -12,6 +12,9 @@ class MovieWithSummaryCell: UICollectionViewCell {
     private var movieNameLabel: UILabel!
     private var movieImage: UIImageView!
     private var summaryLabel: UILabel!
+    private var cellButton: UIButton!
+    private var movieId: Int!
+    private var router: AppRouter!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,8 +32,10 @@ class MovieWithSummaryCell: UICollectionViewCell {
         layout()
     }
     
-    func setData(imageUrl: String, name: String, summary: String) {
+    func setData(imageUrl: String, name: String, summary: String, movieId: Int, router: AppRouter) {
         movieNameLabel.text = name
+        self.movieId = movieId
+        self.router = router
         Task {
             await loadImage(imageURL: imageUrl, imageView: movieImage)
         }
@@ -38,14 +43,18 @@ class MovieWithSummaryCell: UICollectionViewCell {
     }
     
     private func assignViews() {
+        cellButton = UIButton()
+        cellButton.addTarget(self, action: #selector(handleCellButton), for: .touchUpInside)
+        contentView.addSubview(cellButton)
+        
         movieNameLabel = UILabel()
-        contentView.addSubview(movieNameLabel)
+        cellButton.addSubview(movieNameLabel)
         
         movieImage = UIImageView()
-        contentView.addSubview(movieImage)
+        cellButton.addSubview(movieImage)
         
         summaryLabel = UILabel()
-        contentView.addSubview(summaryLabel)
+        cellButton.addSubview(summaryLabel)
         
     }
     
@@ -88,17 +97,27 @@ class MovieWithSummaryCell: UICollectionViewCell {
         summaryLabel.autoPinEdge(toSuperviewEdge: .trailing, withInset: 12)
         summaryLabel.autoPinEdge(.leading, to: .trailing, of: movieImage, withOffset: 16)
         
-        
+        cellButton.autoPinEdgesToSuperviewEdges()
     }
     
-    func loadImage (imageURL: String, imageView: UIImageView) async {
-        do {
-            let url = URL(string: imageURL)
-            let data = try Data(contentsOf: url!)
-            let image = UIImage(data: data)
-            imageView.image = image
-        } catch {
+    func loadImage(imageURL: String, imageView: UIImageView) async {
+        guard let url = URL(string: imageURL) else {
             return
         }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                imageView.image = image
+            }
+        } catch {
+            print("Error loading image: \(error)")
+        }
+    }
+    
+    @objc func handleCellButton() {
+        router.openMovieDetail(movieId: movieId)
     }
 }

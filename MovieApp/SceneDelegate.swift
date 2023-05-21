@@ -21,9 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         else { return }
         
         window = UIWindow(windowScene: windowScene)
-        let vc = MovieCategoryListViewController()
-        window?.rootViewController = vc
-        window?.makeKeyAndVisible()
+        let tabBarController = UITabBarController()
+        let movieDataSource = MovieDataSource()
+        let router = AppRouter(tabBarController: tabBarController, movieDataSource: movieDataSource)
+        router.setStartScreen(in: window)
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

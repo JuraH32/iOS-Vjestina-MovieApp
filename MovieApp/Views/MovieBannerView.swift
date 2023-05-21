@@ -18,12 +18,11 @@ class MovieBannerView: UIView {
     let starButton = UIButton()
     let starButtonSize = 32.0
     
-    var details: MovieDetailsModel?
+    var details: MovieDetailsModel? = nil
     var backgroundImage = UIImageView()
     var categoriesString = ""
     
-    init(details: MovieDetailsModel?) {
-        self.details = details
+    init() {
         super.init(frame: .zero)
         buildViews()
     }
@@ -40,20 +39,14 @@ class MovieBannerView: UIView {
         defineLayoutForViews()
     }
     
-    private func createViews() {
-        guard let details else {return}
+    func updateDetails(details: MovieDetailsModel?) {
+        self.details = details
+        guard let details else { return }
+        scoreLabel.text = String(details.rating)
+        
         Task {
             await loadImage(imageURL: details.imageUrl, imageView: backgroundImage)
         }
-        addSubview(scoreLabel)
-        scoreLabel.text = String(details.rating)
-        
-        addSubview(userScoreLabel)
-        userScoreLabel.text = "User score"
-        
-        addSubview(movieNameLabel)
-        
-        addSubview(dateLabel)
         
         let dateString = details.releaseDate
         let dateFormatterOriginal = DateFormatter()
@@ -65,11 +58,32 @@ class MovieBannerView: UIView {
             dateLabel.text = dateFormatterNew.string(from: date!)
         }
         
-        addSubview(categories)
-        let cat = [MovieCategoryModel.action, MovieCategoryModel.adventure, MovieCategoryModel.drama, MovieCategoryModel.scienceFiction]
+        let cat = details.categories
         categoriesString = cat
             .map {(category: MovieCategoryModel) -> String in return capitalSplitString(string: String(describing: category)).capitalized}
             .joined(separator: ", ")
+        let categoriesText = NSMutableAttributedString(string: categoriesString, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)])
+        categoriesText.append(NSMutableAttributedString(string: String(format: " %dh %dm", details.duration / 60, details.duration % 60), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)]))
+        categories.attributedText = categoriesText
+        
+        let movieName = NSMutableAttributedString(string: details.name, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
+        movieName.append(NSMutableAttributedString(string: String(format: " (%d)", details.year), attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 24)]))
+        movieNameLabel.attributedText = movieName
+        
+        
+    }
+    
+    private func createViews() {
+        addSubview(scoreLabel)
+        
+        addSubview(userScoreLabel)
+        userScoreLabel.text = "User score"
+        
+        addSubview(movieNameLabel)
+        
+        addSubview(dateLabel)
+        
+        addSubview(categories)
         
         addSubview(starButton)
         addSubview(backgroundImage)
@@ -88,7 +102,6 @@ class MovieBannerView: UIView {
     }
     
     private func styleViews() {
-        guard let details else {return}
         backgroundImage.contentMode = .scaleAspectFill
         backgroundImage.clipsToBounds = true
         
@@ -98,17 +111,11 @@ class MovieBannerView: UIView {
         userScoreLabel.textColor = .white
         userScoreLabel.font = UIFont.systemFont(ofSize: 14)
         
-        let movieName = NSMutableAttributedString(string: details.name, attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 24)])
-        movieName.append(NSMutableAttributedString(string: String(format: " (%d)", details.year), attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 24)]))
         movieNameLabel.textColor = .white
-        movieNameLabel.attributedText = movieName
         
         dateLabel.textColor = .white
         dateLabel.font = UIFont.systemFont(ofSize: 14)
         
-        let categoriesText = NSMutableAttributedString(string: categoriesString, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 14)])
-        categoriesText.append(NSMutableAttributedString(string: String(format: " %dh %dm", details.duration / 60, details.duration % 60), attributes: [NSAttributedString.Key.font: UIFont.boldSystemFont(ofSize: 14)]))
-        categories.attributedText = categoriesText
         categories.textColor = .white
         
         let starImage = UIImage(systemName: "star")
@@ -156,14 +163,20 @@ class MovieBannerView: UIView {
         starButton.autoSetDimension(.height, toSize: starButtonSize)
     }
     
-    func loadImage (imageURL: String, imageView: UIImageView) async {
-        do {
-            let url = URL(string: imageURL)
-            let data = try Data(contentsOf: url!)
-            let image = UIImage(data: data)
-            imageView.image = image
-        } catch {
+    func loadImage(imageURL: String, imageView: UIImageView) async {
+        guard let url = URL(string: imageURL) else {
             return
+        }
+
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            
+            DispatchQueue.main.async {
+                let image = UIImage(data: data)
+                imageView.image = image
+            }
+        } catch {
+            print("Error loading image: \(error)")
         }
     }
 }
