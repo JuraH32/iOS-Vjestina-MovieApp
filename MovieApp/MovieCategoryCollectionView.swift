@@ -14,11 +14,13 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
     private var moviesList: [MovieModel]!
     private var moviesCategoryCollectionView: UICollectionView!
     private var categoryName: String!
+    private var router: AppRouter!
     private let reuseIdentifier = "cell"
     
-    init(category: String, moviesList: [MovieModel]) {
+    init(category: String, moviesList: [MovieModel], router: AppRouter) {
         self.categoryName = category
         self.moviesList = moviesList
+        self.router = router
         super.init(frame: .zero)
         self.commonInit()
     }
@@ -82,7 +84,7 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
         
         let movie = moviesList[indexPath.item]
         
-        cell.setData(imageUrl: movie.imageUrl)
+        cell.setData(imageUrl: movie.imageUrl, movieId: movie.id, router: router)
         
         return cell
     }

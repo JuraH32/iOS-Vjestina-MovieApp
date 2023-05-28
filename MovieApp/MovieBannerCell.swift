@@ -9,9 +9,12 @@ import UIKit
 import PureLayout
 
 class MovieBannerCell: UICollectionViewCell {
+    private var movieButton: UIButton!
     private var movieImage: UIImageView!
     private var heartButton: UIButton!
     private var heartImageView: UIImageView!
+    private var router: AppRouter!
+    private var movieId: Int!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -29,20 +32,25 @@ class MovieBannerCell: UICollectionViewCell {
         layout()
     }
     
-    func setData(imageUrl: String) {
+    func setData(imageUrl: String, movieId: Int, router: AppRouter) {
+        self.movieId = movieId
+        self.router = router
         Task {
             await loadImage(imageURL: imageUrl, imageView: movieImage)
         }
     }
     
     private func assignViews() {
+        movieButton = UIButton()
+        movieButton.addTarget(self, action: #selector(handleMovieButton), for: .touchUpInside)
+        addSubview(movieButton)
         
         movieImage = UIImageView()
-        addSubview(movieImage)
+        movieButton.addSubview(movieImage)
         sendSubviewToBack(movieImage)
         
         heartButton = UIButton()
-        addSubview(heartButton)
+        movieButton.addSubview(heartButton)
         
         heartImageView = UIImageView()
         heartButton.addSubview(heartImageView)
@@ -64,6 +72,8 @@ class MovieBannerCell: UICollectionViewCell {
     }
     
     private func layout() {
+        movieButton.autoPinEdgesToSuperviewEdges()
+        
         movieImage.autoPinEdgesToSuperviewEdges()
         
         heartButton.autoPinEdge(toSuperviewEdge: .leading, withInset: 8)
@@ -84,5 +94,9 @@ class MovieBannerCell: UICollectionViewCell {
         } catch {
             return
         }
+    }
+    
+    @objc func handleMovieButton() {
+        router.openMovieDetail(movieId: movieId)
     }
 }

@@ -10,16 +10,31 @@ import PureLayout
 import MovieAppData
 
 class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
-    var movieBannerView: MovieBannerView!
-    var details: MovieDetailsModel?
-    var overviewLabel: UILabel!
-    var summary: UILabel!
-    var roleCollectionView: UICollectionView!
-    var crewList: [MovieCrewMemberModel]!
+    private var movieBannerView: MovieBannerView!
+    private var details: MovieDetailsModel?
+    private var overviewLabel: UILabel!
+    private var summary: UILabel!
+    private var roleCollectionView: UICollectionView!
+    private var crewList: [MovieCrewMemberModel]!
+    private var movieId: Int!
+    private var screenTitle: UILabel!
+    
+    private var summaryCenterConstrain: NSLayoutConstraint!
+    private var rolesCenterConstrain: NSLayoutConstraint!
+    
     let reuseIdentifier = "cell"
     
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
+    }
+    
+    init(movieId: Int) {
+        self.movieId = movieId
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
@@ -31,6 +46,9 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     private func createViews() {
+        screenTitle = UILabel()
+        navigationItem.titleView = screenTitle
+        
         movieBannerView = MovieBannerView(details: details)
         view.addSubview(movieBannerView)
         
@@ -56,6 +74,8 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     private func styleViews() {
         view.backgroundColor = .white
         
+        screenTitle.text = "Movie Details"
+        
         overviewLabel.font = UIFont.boldSystemFont(ofSize: 20)
         
         summary.font = UIFont.systemFont(ofSize: 14)
@@ -67,7 +87,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     }
     
     private func defineLayoutForViews() {
-        movieBannerView.autoPinEdge(toSuperviewEdge: .top)
+        movieBannerView.autoPinEdge(toSuperviewSafeArea: .top)
         movieBannerView.autoMatch(.width, to: .width, of: view)
         
         overviewLabel.autoPinEdge(.top, to: .bottom, of: movieBannerView, withOffset: 22)
@@ -79,14 +99,36 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         summary.autoAlignAxis(toSuperviewAxis: .vertical)
         
         roleCollectionView.autoPinEdge(.top, to: .bottom, of: summary, withOffset: 27)
-        roleCollectionView.autoPinEdge(toSuperviewEdge: .leading, withInset: 16)
-        roleCollectionView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 16)
+        roleCollectionView.autoMatch(.width, to: .width, of: view, withOffset: -32)
         roleCollectionView.autoPinEdge(toSuperviewEdge: .bottom)
+        roleCollectionView.autoAlignAxis(toSuperviewAxis: .vertical)
     }
     
     private func getDetails() {
-        details = MovieUseCase().getDetails(id: 111161)
+        details = MovieUseCase().getDetails(id: movieId)
         crewList = details!.crewMembers
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        summary.transform = summary.transform.translatedBy(x: -view.frame.width, y: 0)
+        roleCollectionView.transform = roleCollectionView.transform.translatedBy(x: -view.frame.width, y: 0)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        UIView.animate(
+            withDuration: 0.2,
+            animations: {
+                self.summary.transform = .identity
+        })
+        UIView.animate(
+            withDuration: 0.3,
+            delay: 0.2,
+            animations: {
+                self.roleCollectionView.transform = .identity
+        })
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
