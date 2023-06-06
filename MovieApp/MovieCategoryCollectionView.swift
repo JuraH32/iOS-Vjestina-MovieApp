@@ -14,6 +14,7 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
     private var selected = 0
     
     private var tagButtons: [UILabel] = []
+    private var lines: [UIView] = []
     private var tags: [String]
     
     init(category: String, moviesList: [[MovieModel]], router: AppRouter, tags: [String], toggleFavorite: @escaping ToggleFavorite) {
@@ -62,22 +63,31 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
             let button = UIButton()
             let buttonView = UILabel()
             buttonView.text = tag
+            let lineView = UIView()
+            lineView.backgroundColor = .black
             if index == selected {
                 buttonView.font = .boldSystemFont(ofSize: 16)
+                lineView.isHidden = false
             } else {
                 buttonView.font = .systemFont(ofSize: 16)
                 buttonView.textColor = .gray
+                lineView.isHidden = true
             }
             button.addSubview(buttonView)
+            button.addSubview(lineView)
             buttonView.autoAlignAxis(toSuperviewAxis: .vertical)
             buttonView.autoAlignAxis(toSuperviewAxis: .horizontal)
+            buttonView.autoSetDimension(.height, toSize: 22)
+            lineView.autoPinEdgesToSuperviewEdges(with: .zero, excludingEdge: .top)
+            lineView.autoPinEdge(.top, to: .bottom, of: buttonView, withOffset: 4)
+            lineView.autoSetDimension(.height, toSize: 3)
+            lineView.autoMatch(.width, to: .width, of: buttonView)
             button.tag = index
             button.addTarget(self, action: #selector(setSelected), for: .touchUpInside)
-//            let title = NSAttributedString(string: tag, attributes: [NSAttributedString.Key.font: UIFont.systemFont(ofSize: 16)])
-//            button.setAttributedTitle(title, for: .normal)
             
             tagButtons.append(buttonView)
             buttonStack.addArrangedSubview(button)
+            lines.append(lineView)
         }
     }
     
@@ -86,7 +96,7 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
         
         buttonStack.axis = .horizontal
         buttonStack.alignment = .fill
-        buttonStack.distribution = .fillProportionally
+        buttonStack.distribution = UIStackView.Distribution(rawValue: 24)!
         buttonStack.spacing = 20
     }
     
@@ -97,7 +107,6 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
         
         buttonStack.autoPinEdge(.top, to: .bottom, of: movieCategoryLabel, withOffset: 8)
         buttonStack.autoPinEdge(toSuperviewEdge: .leading, withInset: 12)
-        buttonStack.autoPinEdge(toSuperviewEdge: .trailing)
         
         moviesCategoryCollectionView.autoPinEdge(toSuperviewEdge: .leading)
         moviesCategoryCollectionView.autoPinEdge(toSuperviewEdge: .trailing)
@@ -167,16 +176,19 @@ class MovieCategoryCollectionView: UIView, UICollectionViewDelegate, UICollectio
     @objc func setSelected(sender: UIButton) {
         guard tagButtons.count > 0 else { return }
         let index = sender.tag
+        if index == selected {
+            return
+        }
         selected = index
         for i in 0...tagButtons.count - 1 {
             if i == index {
                 tagButtons[i].font = .boldSystemFont(ofSize: 16)
-                tagButtons[i].superview?.addBottomBorder(color: .black, thickness: 2.0)
                 tagButtons[i].textColor = .black
+                lines[i].isHidden = false
             } else {
                 tagButtons[i].font = .systemFont(ofSize: 16)
-                tagButtons[i].superview?.addBottomBorder(color: .white, thickness: 2.0)
                 tagButtons[i].textColor = .gray
+                lines[i].isHidden = true
             }
         }
         DispatchQueue.main.async {
