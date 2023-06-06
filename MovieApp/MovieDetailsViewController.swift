@@ -12,6 +12,7 @@ import Combine
 class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     private var movieBannerView: MovieBannerView!
     private var details: MovieDetailsModel?
+    private var isFavorite: Bool! = false
     private var overviewLabel: UILabel!
     private var summary: UILabel!
     private var roleCollectionView: UICollectionView!
@@ -20,6 +21,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
     private var screenTitle: UILabel!
     private var viewModel: MovieDetailsViewModel
     private var disposable = Set<AnyCancellable>()
+    private var disposableFavorite = Set<AnyCancellable>()
     
     private var summaryCenterConstrain: NSLayoutConstraint!
     private var rolesCenterConstrain: NSLayoutConstraint!
@@ -53,6 +55,7 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         navigationItem.titleView = screenTitle
         
         movieBannerView = MovieBannerView()
+        movieBannerView.starButton.addTarget(self, action: #selector(toggleFavorite), for: .touchUpInside)
         view.addSubview(movieBannerView)
         
         overviewLabel = UILabel()
@@ -116,6 +119,13 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
                 self?.roleCollectionView.reloadData()
             }
         }.store(in: &disposable)
+        
+        viewModel.$isFavorite.sink { [weak self] isFavorite in
+            self?.isFavorite = isFavorite
+            DispatchQueue.main.async {
+                self?.movieBannerView.updateFavorite(favorite: isFavorite)
+            }
+        }.store(in: &disposableFavorite)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -152,5 +162,9 @@ class MovieDetailsViewController: UIViewController, UICollectionViewDataSource, 
         cell.setText(name: crewMember.name, role: crewMember.role)
         
         return cell
+    }
+    
+    @objc private func toggleFavorite() {
+        viewModel.toggleIsFavorite()
     }
 }

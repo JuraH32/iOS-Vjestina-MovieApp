@@ -15,6 +15,7 @@ class AppRouter: AppRouterProtocol {
     private var alternateNavigationController: UINavigationController?
     private var isAlternate = false
     private var movieDataSource: MovieDataSource!
+    private var favoritesViewModel: FavoritesViewModel!
     
     init(tabBarController: UITabBarController, movieDataSource: MovieDataSource) {
         self.tabBarController = tabBarController
@@ -22,12 +23,13 @@ class AppRouter: AppRouterProtocol {
     }
     
     func setStartScreen(in window: UIWindow?) {
-        let movieCategoryViewListModel = MovieCategoryListViewModel(movieDataSource: movieDataSource)
-        let movieCategoryViewListController = MovieCategoryListViewController(router: self, viewModel: movieCategoryViewListModel)
-        let movieCategoryNavigation = UINavigationController(rootViewController: movieCategoryViewListController)
-        
-        let favoritesViewController = FavoritesViewController(router: self)
+        favoritesViewModel = FavoritesViewModel(movieDataSource: movieDataSource)
+        let favoritesViewController = FavoritesViewController(router: self, viewModel: favoritesViewModel)
         let favoritesNavigation = UINavigationController(rootViewController: favoritesViewController)
+        
+        let movieCategoryViewListModel = MovieCategoryListViewModel(movieDataSource: movieDataSource)
+        let movieCategoryViewListController = MovieCategoryListViewController(router: self, viewModel: movieCategoryViewListModel, favoritesViewModel: favoritesViewModel)
+        let movieCategoryNavigation = UINavigationController(rootViewController: movieCategoryViewListController)
         
         movieCategoryNavigation.tabBarItem = UITabBarItem(title: "Movie list", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
         favoritesNavigation.tabBarItem = UITabBarItem(title: "Favorites", image: UIImage(systemName: "heart"), selectedImage: UIImage(systemName: "heart.fill"))
@@ -50,7 +52,7 @@ class AppRouter: AppRouterProtocol {
     }
     
     func openMovieDetail(movieId: Int) {
-        let movieDetailsViewModel = MovieDetailsViewModel(movieDataSource: movieDataSource, id: movieId)
+        let movieDetailsViewModel = MovieDetailsViewModel(movieDataSource: movieDataSource, id: movieId, favoritesViewModel: favoritesViewModel)
         let movieDetailsViewController = MovieDetailsViewController(movieId: movieId, viewModel: movieDetailsViewModel)
         movieDetailsViewController.title = "Movie Details"
         if let selectedNavigationController = tabBarController?.selectedViewController as? UINavigationController {

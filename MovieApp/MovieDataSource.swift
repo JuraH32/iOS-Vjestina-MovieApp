@@ -1,9 +1,8 @@
-import MovieAppData
 import Foundation
 
 class MovieDataSource {
-    var useCase = MovieAppData.MovieUseCase()
     let baseUrl = "https://five-ios-api.herokuapp.com"
+    let userDefaults = UserDefaults.standard
     
     func fetchFreeToWatchMovies(criteria: MovieTagModel, completion: @escaping (Result<[MovieModel], Error>) -> Void) {
         let urlString = baseUrl + "/api/v1/movie/free-to-watch?criteria=" + criteria.rawValue
@@ -77,6 +76,55 @@ class MovieDataSource {
         }
         
         task.resume()
+    }
+    
+    func fetchMovie(id: Int, completion: @escaping (Result<MovieModel, Error>) -> Void) {
+        let urlString = "\(baseUrl)/api/v1/movie/\(id)"
+        let url = URL(string: urlString)!
+        var request = URLRequest(url: url)
+        request.setValue("Bearer Zpu7bOQYLNiCkT32V3c9BPoxDMfxisPAfevLW6ps", forHTTPHeaderField: "Authorization")
+        
+        let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+            if let error = error {
+                completion(.failure(error))
+                return
+            }
+            guard let data = data else {
+                let error = NSError(domain: "Data Error", code: 0, userInfo: nil)
+                completion(.failure(error))
+                return
+            }
+            
+            do {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let movie = try decoder.decode(MovieModel.self, from: data)
+                completion(.success(movie))
+            } catch {
+                completion(.failure(error))
+            }
+        }
+        
+        task.resume()
+    }
+    
+    func toggleFavoriteMovie(id: Int) {
+        var favorites = fetchFavorites()
+        
+        if favorites.contains(where: {$0 == id}) {
+            favorites.removeAll(where: {$0 == id})
+        } else {
+            favorites.append(id)
+        }
+        saveFavorites(favorites: favorites)
+    }
+    
+    func fetchFavorites() -> [Int] {
+        return userDefaults.array(forKey: "favorites") as? [Int] ?? []
+    }
+    
+    func saveFavorites(favorites: [Int]) {
+        userDefaults.set(favorites, forKey: "favorites")
     }
 }
 

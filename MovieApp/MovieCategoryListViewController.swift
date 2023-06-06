@@ -14,23 +14,27 @@ class MovieCategoryListViewController: UIViewController {
     private var scrollView: UIScrollView!
     private var contentView: UIView!
     private var categoryStack: UIStackView!
-    private var popularList: [MovieModel] = []
+    private var popularList: [[MovieModel]] = []
     private var popularCollection: MovieCategoryCollectionView!
-    private var freeList: [MovieModel] = []
+    private var freeList: [[MovieModel]] = []
     private var freeCollection: MovieCategoryCollectionView!
-    private var trendingList: [MovieModel] = []
+    private var trendingList: [[MovieModel]] = []
     private var trendingCollection: MovieCategoryCollectionView!
+    private var favoritesList: [Int] = []
     private var screenTitle: UILabel!
     private var router: AppRouter!
     private var viewModel: MovieCategoryListViewModel!
+    private var favoritesViewModel: FavoritesViewModel!
     private var disposablesFree = Set<AnyCancellable>()
     private var disposablesPopular = Set<AnyCancellable>()
     private var disposablesTrending = Set<AnyCancellable>()
+    private var disposablesFavorite = Set<AnyCancellable>()
     private let reuseIdentifier = "cell"
     
-    init (router: AppRouter, viewModel: MovieCategoryListViewModel) {
+    init (router: AppRouter, viewModel: MovieCategoryListViewModel, favoritesViewModel: FavoritesViewModel) {
         self.router = router
         self.viewModel = viewModel
+        self.favoritesViewModel = favoritesViewModel
         
         super.init(nibName: nil, bundle: nil)
     }
@@ -48,6 +52,14 @@ class MovieCategoryListViewController: UIViewController {
     }
     
     private func bindData() {
+        favoritesViewModel.$favoriteMovies.sink { [weak self] movies in
+            let ids = movies.map({$0.id})
+            self?.favoritesList = ids
+            self?.popularCollection.updateFavoritesList(favorites: ids)
+            self?.freeCollection.updateFavoritesList(favorites: ids)
+            self?.trendingCollection.updateFavoritesList(favorites: ids)
+        }.store(in: &disposablesFavorite)
+        
         viewModel.$popularMovies.sink { [weak self] movies in
             self?.popularList = movies
             self?.popularCollection.updateMoviesList(movies: self?.popularList ?? [])
@@ -77,13 +89,19 @@ class MovieCategoryListViewController: UIViewController {
         categoryStack = UIStackView()
         contentView.addSubview(categoryStack)
         
-        popularCollection = MovieCategoryCollectionView(category: "What's popular", moviesList: popularList, router: router)
+        popularCollection = MovieCategoryCollectionView(category: "What's popular", moviesList: popularList, router: router, tags: ["Streaming", "On TV", "For Rent", "In theaters"]) { [weak self] id in
+            self?.favoritesViewModel.toggleFavoriteMovie(id: id)
+        }
         categoryStack.addArrangedSubview(popularCollection)
         
-        freeCollection = MovieCategoryCollectionView(category: "Free to Watch", moviesList: freeList, router: router)
+        freeCollection = MovieCategoryCollectionView(category: "Free to Watch", moviesList: freeList, router: router, tags: ["Movies", "TV"]) { [weak self] id in
+            self?.favoritesViewModel.toggleFavoriteMovie(id: id)
+        }
         categoryStack.addArrangedSubview(freeCollection)
         
-        trendingCollection = MovieCategoryCollectionView(category: "Trending", moviesList: trendingList, router: router)
+        trendingCollection = MovieCategoryCollectionView(category: "Trending", moviesList: trendingList, router: router, tags: ["Today", "This Week"]) { [weak self] id in
+            self?.favoritesViewModel.toggleFavoriteMovie(id: id)
+        }
         categoryStack.addArrangedSubview(trendingCollection)
     }
     
@@ -109,4 +127,5 @@ class MovieCategoryListViewController: UIViewController {
         scrollView.autoPinEdgesToSuperviewEdges()
         scrollView.contentSize = contentView.frame.size
     }
+    
 }

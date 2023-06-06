@@ -15,6 +15,8 @@ class MovieBannerCell: UICollectionViewCell {
     private var heartImageView: UIImageView!
     private var router: AppRouter!
     private var movieId: Int!
+    private var isFavorite: Bool!
+    private var toggleFavorite: ToggleFavorite?
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -32,9 +34,20 @@ class MovieBannerCell: UICollectionViewCell {
         layout()
     }
     
-    func setData(imageUrl: String, movieId: Int, router: AppRouter) {
+    func setData(imageUrl: String, movieId: Int, router: AppRouter, isFavorite: Bool, toggleFavorite: @escaping ToggleFavorite) {
         self.movieId = movieId
         self.router = router
+        self.isFavorite = isFavorite
+        self.toggleFavorite = toggleFavorite
+        DispatchQueue.main.async {
+            if isFavorite {
+                let heartImage = UIImage(systemName: "heart.fill")
+                self.heartImageView.image = heartImage
+            } else {
+                let heartImage = UIImage(systemName: "heart")
+                self.heartImageView.image = heartImage
+            }
+        }
         Task {
             await loadImage(imageURL: imageUrl, imageView: movieImage)
         }
@@ -50,6 +63,7 @@ class MovieBannerCell: UICollectionViewCell {
         sendSubviewToBack(movieImage)
         
         heartButton = UIButton()
+        heartButton.addTarget(self, action: #selector(handleToggleFavorite), for: .touchUpInside)
         movieButton.addSubview(heartButton)
         
         heartImageView = UIImageView()
@@ -63,8 +77,6 @@ class MovieBannerCell: UICollectionViewCell {
         movieImage.contentMode = .scaleAspectFill
         movieImage.clipsToBounds = true
         
-        let heartImage = UIImage(systemName: "heart")
-        heartImageView.image = heartImage
         heartImageView.tintColor = .white
         heartButton.alpha = 0.6
         heartButton.backgroundColor = .black
@@ -105,4 +117,10 @@ class MovieBannerCell: UICollectionViewCell {
     @objc func handleMovieButton() {
         router.openMovieDetail(movieId: movieId)
     }
+    
+    @objc func handleToggleFavorite() {
+        toggleFavorite?(movieId)
+    }
 }
+
+typealias ToggleFavorite = (Int) -> Void

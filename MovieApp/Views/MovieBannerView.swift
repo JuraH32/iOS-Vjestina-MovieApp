@@ -15,7 +15,7 @@ class MovieBannerView: UIView {
     let movieNameLabel = UILabel()
     let dateLabel = UILabel()
     let categories = UILabel()
-    let starButton = UIButton()
+    var starButton = UIButton()
     let starButtonSize = 32.0
     
     var details: MovieDetailsModel? = nil
@@ -28,7 +28,6 @@ class MovieBannerView: UIView {
     }
 
     required init?(coder aDecoder: NSCoder) {
-        self.details = nil
         super.init(coder: aDecoder)
         buildViews()
     }
@@ -71,6 +70,16 @@ class MovieBannerView: UIView {
         movieNameLabel.attributedText = movieName
         
         
+    }
+    
+    func updateFavorite(favorite: Bool) {
+        var starImage: UIImage?
+        if favorite {
+            starImage = UIImage(systemName: "heart.fill")
+        } else {
+            starImage = UIImage(systemName: "heart")
+        }
+        starButton.setImage(starImage, for: .normal)
     }
     
     private func createViews() {
@@ -118,8 +127,6 @@ class MovieBannerView: UIView {
         
         categories.textColor = .white
         
-        let starImage = UIImage(systemName: "star")
-        starButton.setImage(starImage, for: .normal)
         starButton.imageView?.alpha = 1
         starButton.tintColor = .white
         starButton.alpha = 0.6
